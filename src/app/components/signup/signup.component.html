@@ -1,6 +1,6 @@
 <div class="card">
   <h2>Sign Up</h2>
-  <form>
+  <form (submit)="handleSubmit($event)">
     <input
       type="text"
       id="username"
@@ -10,7 +10,7 @@
     />
     <input type="email" id="email" name="email" placeholder="Email ID" />
     <input type="phone" id="phone" name="phone" placeholder="Phone Number" />
-   <app-password-input placeholder="Password" id="password" name="Password"></app-password-input>
+   <app-password-input placeholder="Password" id="password" name="password"></app-password-input>
    <app-password-input placeholder="Confirm Password" id="conf-password" name="confirmPassword"></app-password-input>
     <button type="submit">Sign up</button>
   </form>
