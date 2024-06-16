@@ -37,11 +37,7 @@
     border-color: #ff9900; /* Warna input saat focus */
   }
 
-  .conf-password{
-    width: 100%;
-    border: 1px solid red;
-    position: relative;
-  }
+ 
   
   button {
     background-color: #ff9900; 
