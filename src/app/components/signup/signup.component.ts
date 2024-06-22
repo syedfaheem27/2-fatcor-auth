@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { User } from 'src/app/models/user.interface';
-import { hashPassword } from 'src/app/utils/hashPassword';
+import { IUserRegister } from 'src/app/models/user.interface';
 
 
 @Component({
@@ -40,15 +39,16 @@ export class SignupComponent implements OnInit {
       return alert("Password and confirm password are not equal!");
 
 
-    let hashObj = await hashPassword(password);
+    // let hashObj = await hashPassword(password);
 
-    if(!hashObj.isSuccess)
-        throw hashObj.errorMessage;
+    // if (!hashObj.isSuccess)
+    //   return alert(hashObj.errorMessage);
 
-    let user: User = {
+    let user: IUserRegister = {
       username,
       phone: phoneNumber || null,
-      password:hashObj.hash as string,
+      // password: hashObj.hash as string,
+      password,
       emailId: emailId || null,
       role: "User"
     }
@@ -66,16 +66,18 @@ export class SignupComponent implements OnInit {
 
       if (data.isRegistered)
         alert("User successfully registered!");
-      else {
-        alert(data.message);
+      else
         throw data;
-      }
 
       this.router.navigate(['/login']);
 
     } catch (err: any) {
       console.log(err, "error");
+      alert(err.message);
     }
 
   }
 }
+
+//$2a$10$XFoIhuQ0eSzDU81Oh8IznO0PUTGbzBrbnabjLS5DqXHcv0F1UwsoC
+//$2a$10$dt6QT1yhlB/wCIHAhHtv0uFBpskGoKSB0.b1DXNZzpoNUUVp.C6E6
