@@ -39,23 +39,14 @@ export class SignupComponent implements OnInit {
       return alert("Password and confirm password are not equal!");
 
 
-    let user: User;
+    let user: User = {
+      username,
+      phone: phoneNumber || null,
+      password,
+      emailId: emailId || null,
+      role: "User"
+    }
 
-    if (!emailId)
-      user = {
-        username,
-        role: "User",
-        password,
-        phone: phoneNumber
-      }
-
-    if (!phoneNumber)
-      user = {
-        username,
-        role: "User",
-        password,
-        emailId
-      }
     try {
       const res = await fetch(this.api_url, {
         method: 'POST',
@@ -65,19 +56,18 @@ export class SignupComponent implements OnInit {
         body: JSON.stringify(user!)
       });
 
-
       const data = await res.json();
 
-      if (data.isSuccessful)
-        alert("User successfully reg◘istered!");
+      if (data.isRegistered)
+        alert("User successfully registered!");
       else {
         alert(data.message);
-        throw new Error(data.message);
+        throw data;
       }
 
       this.router.navigate(['/login']);
 
-    } catch (err) {
+    } catch (err:any) {
       console.log(err, "error");
     }
 
