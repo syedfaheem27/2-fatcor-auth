@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from 'src/app/models/user.interface';
+import { hashPassword } from 'src/app/utils/hashPassword';
 
 
 @Component({
@@ -39,10 +40,15 @@ export class SignupComponent implements OnInit {
       return alert("Password and confirm password are not equal!");
 
 
+    let hashObj = await hashPassword(password);
+
+    if(!hashObj.isSuccess)
+        throw hashObj.errorMessage;
+
     let user: User = {
       username,
       phone: phoneNumber || null,
-      password,
+      password:hashObj.hash as string,
       emailId: emailId || null,
       role: "User"
     }
@@ -67,7 +73,7 @@ export class SignupComponent implements OnInit {
 
       this.router.navigate(['/login']);
 
-    } catch (err:any) {
+    } catch (err: any) {
       console.log(err, "error");
     }
 
