@@ -39,15 +39,10 @@ export class SignupComponent implements OnInit {
       return alert("Password and confirm password are not equal!");
 
 
-    // let hashObj = await hashPassword(password);
-
-    // if (!hashObj.isSuccess)
-    //   return alert(hashObj.errorMessage);
 
     let user: IUserRegister = {
       username,
       phone: phoneNumber || null,
-      // password: hashObj.hash as string,
       password,
       emailId: emailId || null,
       role: "User"
@@ -78,6 +73,3 @@ export class SignupComponent implements OnInit {
 
   }
 }
-
-//$2a$10$XFoIhuQ0eSzDU81Oh8IznO0PUTGbzBrbnabjLS5DqXHcv0F1UwsoC
-//$2a$10$dt6QT1yhlB/wCIHAhHtv0uFBpskGoKSB0.b1DXNZzpoNUUVp.C6E6

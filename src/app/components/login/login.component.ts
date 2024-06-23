@@ -24,14 +24,9 @@ export class LoginComponent implements OnInit {
     if (!username || !password)
       return alert("Username and Password is required!");
 
-    // const hashedObj = await hashPassword(password);
-
-    // if (!hashedObj.isSuccess)
-    //   alert(hashedObj.errorMessage);
 
     const user: IUserLogin = {
       username,
-      // password: hashedObj.hash as string
       password
     }
 
@@ -44,13 +39,19 @@ export class LoginComponent implements OnInit {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(user)
-      })
+      });
+
 
       const data = await res.json();
 
-      console.log(data);
+      if(data.isLoggedInSomewhere)
+        return alert("The user is logged in somewhere else!");
+
+      if(!data.isSucessfullyLoggedIn)
+          throw data.message;
 
       alert("Successfully logged in!");
+      console.log(data);
 
 
     } catch (err) {
