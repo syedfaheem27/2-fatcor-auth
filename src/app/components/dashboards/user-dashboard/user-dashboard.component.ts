@@ -15,18 +15,20 @@ export class UserDashboardComponent implements OnInit {
   async handleAuthenticate() {
     try {
       const token = sessionStorage.getItem('token');
+      console.log(token);
       const res = await fetch(this.api_url, {
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${JSON.parse(token!)}`,
           "Content-Type": "application/json"
         }
-      })
+      });
+
 
       const data = await res.json();
 
       if (!data.isAuthenticated)
-        return alert("Not autenticated");
+        return alert(data.message);
 
       console.log(data);
     } catch (err) {

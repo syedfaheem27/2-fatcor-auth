@@ -1,18 +1,20 @@
 <div class="card">
   <h2>Login</h2>
   <form (submit)="handleSubmit($event)">
-    <input
-      type="text"
-      id="username"
-      name="username"
-      placeholder="Username"
-      required
-    />
-   <app-password-input placeholder="Password" id="password" name="password"></app-password-input>
+    <input type="text" id="username" name="username" placeholder="Username" required />
+    <app-password-input placeholder="Password" id="password" name="password"></app-password-input>
     <button type="submit">Login</button>
   </form>
   <div>
-    <span>Don't have an account?  </span>
+    <span>Don't have an account? </span>
     <a routerLink="/signup">Sign up</a>
   </div>
+</div>
+
+<div *ngIf="is2FaModalOpen" class="backdrop" (click)="handleOutsideClick($event)">
+  <form class="content" (submit)="handleTwoFactorAuth($event)">
+    <label for="2fa">Enter 2fa code</label>
+    <input type="text" name="2fa-pass" id="2fa">
+    <button>Submit</button>
+  </form>
 </div>

@@ -9,7 +9,13 @@ import { IUserLoginResponse } from 'src/app/models/user.response';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  private api_url = "https://localhost:44339/api/User/login"
+  private api_url = "https://localhost:44339/api/User/login";
+
+  private api_2factor = "https://localhost:44339/api/User/2fa";
+
+  public is2FaModalOpen = false;
+
+
   constructor(private router: Router) { }
 
   ngOnInit(): void { }
@@ -48,8 +54,10 @@ export class LoginComponent implements OnInit {
       if (data.isLoggedInSomewhere)
         return alert("The user is logged in somewhere else!");
 
-      if (data.requires2FA)
+      if (data.requires2FA) {
+        this.is2FaModalOpen = true;
         return alert(data.message);
+      }
 
       if (!data.isSucessfullyLoggedIn)
         throw data.message;
@@ -73,5 +81,24 @@ export class LoginComponent implements OnInit {
       console.log(err, 'error');
     }
 
+  }
+
+  handleTwoFactorAuth(event: Event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target as HTMLFormElement);
+
+    const code = formData.get("2fa-pass") as string;
+
+    console.log(code);
+  }
+
+  handleOutsideClick(event: Event) {
+    const el = (event.target as Element).closest('.content');
+
+    if (el !== null)
+      return;
+
+    this.is2FaModalOpen = false;
   }
 }
