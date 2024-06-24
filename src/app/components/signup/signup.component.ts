@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IUserRegister } from 'src/app/models/user.interface';
+import { IUserRegisterResponse } from 'src/app/models/user.response';
 
 
 @Component({
@@ -57,7 +58,7 @@ export class SignupComponent implements OnInit {
         body: JSON.stringify(user!)
       });
 
-      const data = await res.json();
+      const data = await res.json() as IUserRegisterResponse;
 
       if (data.isRegistered)
         alert("User successfully registered!");

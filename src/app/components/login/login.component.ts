@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { IUserLogin } from 'src/app/models/user.interface';
+import { IUserLoginResponse } from 'src/app/models/user.response';
 
 @Component({
   selector: 'app-login',
@@ -8,7 +10,7 @@ import { IUserLogin } from 'src/app/models/user.interface';
 })
 export class LoginComponent implements OnInit {
   private api_url = "https://localhost:44339/api/User/login"
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void { }
 
@@ -30,7 +32,6 @@ export class LoginComponent implements OnInit {
       password
     }
 
-    console.log(user);
 
     try {
       const res = await fetch(this.api_url, {
@@ -42,16 +43,30 @@ export class LoginComponent implements OnInit {
       });
 
 
-      const data = await res.json();
+      const data = await res.json() as IUserLoginResponse;
 
-      if(data.isLoggedInSomewhere)
+      if (data.isLoggedInSomewhere)
         return alert("The user is logged in somewhere else!");
 
-      if(!data.isSucessfullyLoggedIn)
-          throw data.message;
+      if (data.requires2FA)
+        return alert(data.message);
+
+      if (!data.isSucessfullyLoggedIn)
+        throw data.message;
 
       alert("Successfully logged in!");
+
+      //Store the user info in session storage 
+      //Redirect to dashboard
       console.log(data);
+      sessionStorage.setItem("username", JSON.stringify(data.username!));
+      sessionStorage.setItem("Role", JSON.stringify(data.role!));
+      sessionStorage.setItem("token", JSON.stringify(data.token!));
+
+      if (data.role === 'User')
+        this.router.navigate(['/user-dashboard']);
+      else
+        this.router.navigate(['/admin-dashboard']);
 
 
     } catch (err) {
