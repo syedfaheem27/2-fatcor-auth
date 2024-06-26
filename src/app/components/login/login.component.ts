@@ -11,9 +11,12 @@ import { IUserLoginResponse } from 'src/app/models/user.response';
 export class LoginComponent implements OnInit {
   private api_url = "https://localhost:44339/api/User/login";
 
-  private api_2factor = "https://localhost:44339/api/User/2fa";
+  private api_2factor = "https://localhost:44339/api/User/verify-2fa";
 
   public is2FaModalOpen = false;
+
+  public isLogging = false;
+  public username: string = "";
 
 
   constructor(private router: Router) { }
@@ -40,6 +43,7 @@ export class LoginComponent implements OnInit {
 
 
     try {
+      this.isLogging = true;
       const res = await fetch(this.api_url, {
         method: 'POST',
         headers: {
@@ -79,18 +83,54 @@ export class LoginComponent implements OnInit {
 
     } catch (err) {
       console.log(err, 'error');
+    } finally {
+      this.isLogging = false;
     }
 
   }
 
-  handleTwoFactorAuth(event: Event) {
+  async handleTwoFactorAuth(event: Event) {
     event.preventDefault();
 
     const formData = new FormData(event.target as HTMLFormElement);
 
     const code = formData.get("2fa-pass") as string;
 
-    console.log(code);
+    const sendObj = {
+      TwoFactorCode: code,
+      username: this.username,
+      password: '123456789'
+    }
+
+    try {
+      const res = await fetch(this.api_2factor, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(sendObj)
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      if (data.isVerified) {
+        this.is2FaModalOpen = false;
+        sessionStorage.setItem("username", JSON.stringify(data.username!));
+        sessionStorage.setItem("Role", JSON.stringify(data.role!));
+        sessionStorage.setItem("token", JSON.stringify(data.token!));
+
+
+
+        if (data.role === 'User')
+          this.router.navigate(['/user-dashboard']);
+        else
+          this.router.navigate(['/admin-dashboard']);
+      }
+    } catch (err) {
+      console.log("error", err);
+
+    }
   }
 
   handleOutsideClick(event: Event) {

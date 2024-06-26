@@ -12,6 +12,8 @@ import { IUserRegisterResponse } from 'src/app/models/user.response';
 export class SignupComponent implements OnInit {
   private api_url = "https://localhost:44339/api/User/register";
 
+  public isSigningUp: boolean = false;
+
   constructor(private router: Router) { }
 
   ngOnInit(): void { }
@@ -50,6 +52,7 @@ export class SignupComponent implements OnInit {
     }
 
     try {
+      this.isSigningUp = true;
       const res = await fetch(this.api_url, {
         method: 'POST',
         headers: {
@@ -70,6 +73,8 @@ export class SignupComponent implements OnInit {
     } catch (err: any) {
       console.log(err, "error");
       alert(err.message);
+    } finally {
+      this.isSigningUp = false;
     }
 
   }

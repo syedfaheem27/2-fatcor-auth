@@ -7,10 +7,11 @@ import { SignupComponent } from './components/signup/signup.component';
 import { PasswordInputComponent } from './components/shared/password-input/password-input.component';
 import { AdminDashboardComponent } from './components/dashboards/admin-dashboard/admin-dashboard.component';
 import { UserDashboardComponent } from './components/dashboards/user-dashboard/user-dashboard.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent, LoginComponent, SignupComponent, PasswordInputComponent, AdminDashboardComponent, UserDashboardComponent],
-  imports: [BrowserModule, AppRoutingModule],
+  imports: [BrowserModule, AppRoutingModule,FormsModule],
   providers: [],
   bootstrap: [AppComponent],
 })

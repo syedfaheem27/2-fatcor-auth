@@ -1,9 +1,9 @@
 <div class="card">
   <h2>Login</h2>
   <form (submit)="handleSubmit($event)">
-    <input type="text" id="username" name="username" placeholder="Username" required />
+    <input type="text" id="username" name="username" placeholder="Username" required  [(ngModel)]="username"/>
     <app-password-input placeholder="Password" id="password" name="password"></app-password-input>
-    <button type="submit">Login</button>
+    <button type="submit" [disabled]="isLogging">{{ isLogging ? 'Logging...' : 'Login' }}</button>
   </form>
   <div>
     <span>Don't have an account? </span>
