@@ -52,4 +52,10 @@
   button:hover {
     background-color: #ff6600; 
   }
+
   
+  button:disabled{
+    background-color: #d17e03c9;
+    cursor: not-allowed;
+  
+  }

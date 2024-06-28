@@ -1,12 +1,12 @@
 <div class="card">
   <h2>Sign Up</h2>
   <form (submit)="handleSubmit($event)">
-    <input type="text" id="username" name="username" placeholder="Username" required />
-    <input type="email" id="email" name="email" placeholder="Email ID" />
-    <input type="phone" id="phone" name="phone" placeholder="Phone Number" />
-    <app-password-input placeholder="Password" id="password" name="password"></app-password-input>
-    <app-password-input placeholder="Confirm Password" id="conf-password" name="confirmPassword"></app-password-input>
-    <button type="submit" [disabled]="isSigningUp">{{isSigningUp?'Signing up...':'Sign up'}}</button>
+    <input type="text" id="username" name="username" placeholder="Username" required [(ngModel)]="username" />
+    <input type="email" id="email" name="email" placeholder="Email ID" [(ngModel)]="emailId"/>
+    <input type="phone" id="phone" name="phone" placeholder="Phone Number" [(ngModel)]="phoneNumber" />
+    <app-password-input placeholder="Password" id="password" name="password"  (passEvent)="handlePassword($event)"></app-password-input>
+    <app-password-input placeholder="Confirm Password" id="conf-password" name="confirmPassword" (passEvent)="handleConfirmPassword($event)"></app-password-input>
+    <button type="submit" [disabled]="isSigningUp || username.length==0 || password.length===0 || confirmPassword.length==0 || emailId.length===0 && phoneNumber.length===0">{{isSigningUp?'Signing up...':'Sign up'}}</button>
   </form>
   <div>
     <span>Already have an account? </span>

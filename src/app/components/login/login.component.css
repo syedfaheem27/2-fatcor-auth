@@ -20,6 +20,7 @@
   form {
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
   }
 
   input {
@@ -50,6 +51,7 @@
     /* Border radius button */
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
+    font-weight: bold;
   }
 
   button:hover {
@@ -65,23 +67,22 @@
     align-items: center;
   }
 
-.content{
-background-color: gray;
-/* color: #fff; */
-padding: 1rem 2rem;
-width: 90%;
-max-width: 560px;
-border-radius: 4px;
-display: flex;
-flex-direction: column;
-gap: 0.75rem;
-align-items: flex-start;
+.resend-2fa{
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.resend-2fa>input{
+  box-sizing: border-box;
+  padding: 8px;
+  width: 50%;
+  max-width: 320px;
 }
 
-.content >label{
-font-weight: bold;
-}
 
-.content>input{
-  width: 70%;
+button:disabled{
+  background-color: #d17e03c9;
+  cursor: not-allowed;
+
 }

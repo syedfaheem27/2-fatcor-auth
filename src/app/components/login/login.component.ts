@@ -13,37 +13,51 @@ export class LoginComponent implements OnInit {
 
   private api_2factor = "https://localhost:44339/api/User/verify-2fa";
 
-  public is2FaModalOpen = false;
+  private api_2factor_retry = "https://localhost:44339/api/User/resend-2fa";
 
+  public is2FaOpen = true;
+  public resend2Fa = true;
   public isLogging = false;
-  public username: string = "";
+  public isSendingCode = false;
+  public isResendingCode = false;
 
+  public username: string = "";
+  public password: string = "";
+  public _2faCode: string = "";
 
   constructor(private router: Router) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    const token = sessionStorage.getItem('token');
+    const role = sessionStorage.getItem('role');
+
+    if (token !== null) {
+      if (role !== null && JSON.parse(role) === 'User') {
+        this.router.navigate(['/user-dashboard']);
+        console.log("user");
+      }
+      else {
+        this.router.navigate(['/admin-dashboard']);
+        console.log("admin");
+      }
+    }
+  }
 
   public async handleSubmit(event: Event) {
     event.preventDefault();
 
-    const formData = new FormData(event.target as HTMLFormElement);
-
-    //add types
-    const username = formData.get('username') as string;
-    const password = formData.get('password') as string;
-
-    if (!username || !password)
+    if (!this.username || !this.password)
       return alert("Username and Password is required!");
 
 
     const user: IUserLogin = {
-      username,
-      password
+      username: this.username,
+      password: this.password
     }
-
 
     try {
       this.isLogging = true;
+
       const res = await fetch(this.api_url, {
         method: 'POST',
         headers: {
@@ -59,7 +73,7 @@ export class LoginComponent implements OnInit {
         return alert("The user is logged in somewhere else!");
 
       if (data.requires2FA) {
-        this.is2FaModalOpen = true;
+        this.is2FaOpen = true;
         return alert(data.message);
       }
 
@@ -72,7 +86,7 @@ export class LoginComponent implements OnInit {
       //Redirect to dashboard
       console.log(data);
       sessionStorage.setItem("username", JSON.stringify(data.username!));
-      sessionStorage.setItem("Role", JSON.stringify(data.role!));
+      sessionStorage.setItem("role", JSON.stringify(data.role!));
       sessionStorage.setItem("token", JSON.stringify(data.token!));
 
       if (data.role === 'User')
@@ -89,20 +103,15 @@ export class LoginComponent implements OnInit {
 
   }
 
-  async handleTwoFactorAuth(event: Event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.target as HTMLFormElement);
-
-    const code = formData.get("2fa-pass") as string;
-
-    const sendObj = {
-      TwoFactorCode: code,
-      username: this.username,
-      password: '123456789'
-    }
+  async handleTwoFactorAuth() {
 
     try {
+      this.isSendingCode = true;
+      const sendObj = {
+        TwoFactorCode: this._2faCode,
+        username: this.username,
+        password: this.password
+      }
       const res = await fetch(this.api_2factor, {
         method: 'POST',
         headers: {
@@ -114,31 +123,83 @@ export class LoginComponent implements OnInit {
       const data = await res.json();
       console.log(data);
 
-      if (data.isVerified) {
-        this.is2FaModalOpen = false;
-        sessionStorage.setItem("username", JSON.stringify(data.username!));
-        sessionStorage.setItem("Role", JSON.stringify(data.role!));
-        sessionStorage.setItem("token", JSON.stringify(data.token!));
 
 
+      if (!data.isVerified) {
+        alert(data.message);
+        console.log(data);
 
-        if (data.role === 'User')
-          this.router.navigate(['/user-dashboard']);
-        else
-          this.router.navigate(['/admin-dashboard']);
+        if (data.hasExpired)
+          this.resend2Fa = true;
+
+        return;
       }
+
+      //If control reaches here 
+      //means the code is verified
+
+      this.is2FaOpen = false;
+      sessionStorage.setItem("username", JSON.stringify(data.username!));
+      sessionStorage.setItem("role", JSON.stringify(data.role!));
+      sessionStorage.setItem("token", JSON.stringify(data.token!));
+
+
+
+      if (data.role === 'User')
+        this.router.navigate(['/user-dashboard'], { replaceUrl: true });
+      else
+        this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
+
     } catch (err) {
       console.log("error", err);
 
+    } finally {
+      this.isSendingCode = false;
     }
   }
 
-  handleOutsideClick(event: Event) {
-    const el = (event.target as Element).closest('.content');
+  public async handleResendTwoFactor() {
+    try {
+      this.isResendingCode = true;
+      const resendObj = {
+        username: this.username,
+        password: this.password
+      }
 
-    if (el !== null)
-      return;
+      const res = await fetch(this.api_2factor_retry, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(resendObj)
+      });
 
-    this.is2FaModalOpen = false;
+      const data_1 = await res.json();
+      console.log(data_1);
+
+      if (!data_1.resentSuccessfully && !data_1.hasUser) {
+        alert(data_1.message);
+        this.router.navigate(['/login']);
+      }
+
+      if (data_1.resentSuccessfully) {
+        alert(data_1.message);
+        this.resend2Fa = false;
+      }
+
+    } catch (err) {
+      console.log(err);
+
+    } finally {
+      this.isResendingCode = false;
+    }
   }
+
+
+  handlePassword(pass: string): void {
+    this.password = pass;
+  }
+
+
+
 }

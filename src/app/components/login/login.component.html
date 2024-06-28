@@ -1,20 +1,23 @@
 <div class="card">
   <h2>Login</h2>
   <form (submit)="handleSubmit($event)">
-    <input type="text" id="username" name="username" placeholder="Username" required  [(ngModel)]="username"/>
-    <app-password-input placeholder="Password" id="password" name="password"></app-password-input>
-    <button type="submit" [disabled]="isLogging">{{ isLogging ? 'Logging...' : 'Login' }}</button>
+    <input type="text" id="username" name="username" placeholder="Username" required [(ngModel)]="username" />
+    <app-password-input placeholder="Password" id="password" name="password"
+      (passEvent)="handlePassword($event)"></app-password-input>
+    <button type="submit" [disabled]="isLogging || username.length===0 || password.length===0">{{ isLogging ?
+      'Logging...' :
+      'Login' }}</button>
+
+    <div *ngIf="is2FaOpen" class="resend-2fa">
+      <input type="text" name="2fa-pass" id="2fa" [(ngModel)]="_2faCode">
+      <button (click)="handleTwoFactorAuth()" type="button" [disabled]="_2faCode.length===0  || resend2Fa || isSendingCode">Send
+        Code</button>
+      <button *ngIf="resend2Fa" (click)="handleResendTwoFactor()" [disabled]="_2faCode.length===0 || isResendingCode">Resend</button>
+    </div>
+
   </form>
   <div>
     <span>Don't have an account? </span>
     <a routerLink="/signup">Sign up</a>
   </div>
-</div>
-
-<div *ngIf="is2FaModalOpen" class="backdrop" (click)="handleOutsideClick($event)">
-  <form class="content" (submit)="handleTwoFactorAuth($event)">
-    <label for="2fa">Enter 2fa code</label>
-    <input type="text" name="2fa-pass" id="2fa">
-    <button>Submit</button>
-  </form>
 </div>

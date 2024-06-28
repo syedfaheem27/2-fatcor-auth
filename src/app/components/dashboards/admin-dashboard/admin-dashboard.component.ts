@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -7,9 +8,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AdminDashboardComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
+    const token = sessionStorage.getItem('token');
+    const role = sessionStorage.getItem('role');
+
+    if (token === null || role === null) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (JSON.parse(role) !== "Admin")
+      this.router.navigate(['/login']);
+
+
+    return;
   }
 
 }

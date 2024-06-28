@@ -14,6 +14,12 @@ export class SignupComponent implements OnInit {
 
   public isSigningUp: boolean = false;
 
+  public username: string = '';
+  public password: string = '';
+  public confirmPassword: string = "";
+  public phoneNumber: string = '';
+  public emailId: string = "";
+
   constructor(private router: Router) { }
 
   ngOnInit(): void { }
@@ -21,33 +27,25 @@ export class SignupComponent implements OnInit {
   public async handleSubmit(event: Event) {
     event.preventDefault();
 
-    const formData = new FormData(event.target as HTMLFormElement);
-
-    const username = formData.get('username') as string;
-    const emailId = formData.get('email') as string;
-    const phoneNumber = formData.get('phone') as string;
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
-
-    if (!username)
+    if (!this.username)
       return alert("Username is missing!");
 
-    if (!emailId && !phoneNumber)
+    if (!this.emailId && !this.phoneNumber)
       return alert("EmailId and phone number are missing!");
 
-    if (!password)
+    if (!this.password)
       return alert("Password is missing!");
 
-    if (password !== confirmPassword)
+    if (this.password !== this.confirmPassword)
       return alert("Password and confirm password are not equal!");
 
 
 
     let user: IUserRegister = {
-      username,
-      phone: phoneNumber || null,
-      password,
-      emailId: emailId || null,
+      username: this.username,
+      phone: this.phoneNumber || null,
+      password: this.password,
+      emailId: this.emailId || null,
       role: "User"
     }
 
@@ -77,5 +75,13 @@ export class SignupComponent implements OnInit {
       this.isSigningUp = false;
     }
 
+  }
+
+  handlePassword(data: string) {
+    this.password = data;
+  }
+
+  handleConfirmPassword(data: string) {
+    this.confirmPassword = data;
   }
 }
