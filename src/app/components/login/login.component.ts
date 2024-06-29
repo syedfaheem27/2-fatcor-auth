@@ -10,12 +10,6 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  private api_url = "https://localhost:44339/api/User/login";
-
-  private api_2factor = "https://localhost:44339/api/User/verify-2fa";
-
-  private api_2factor_retry = "https://localhost:44339/api/User/resend-2fa";
-
   public is2FaOpen = false;
   public resend2Fa = false;
   public isLogging = false;
@@ -58,18 +52,7 @@ export class LoginComponent implements OnInit {
         username: this.username,
         password: this.password
       }
-      // const data=await this.authService.login(user);
-
-      const res = await fetch(this.api_url, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(user)
-      });
-
-
-      const data = await res.json() as IUserLoginResponse;
+      const data = await this.authService.login(user);
 
       if (data.isLoggedInSomewhere)
         return alert("The user is logged in somewhere else!");
@@ -87,9 +70,8 @@ export class LoginComponent implements OnInit {
       //Store the user info in session storage 
       //Redirect to dashboard
       console.log(data);
-      sessionStorage.setItem("username", JSON.stringify(data.username!));
-      sessionStorage.setItem("role", JSON.stringify(data.role!));
-      sessionStorage.setItem("token", JSON.stringify(data.token!));
+
+      this.storeUserDetails(data.username!, data.role!, data.token!);
 
       if (data.role === 'User')
         this.router.navigate(['/user-dashboard']);
@@ -99,6 +81,7 @@ export class LoginComponent implements OnInit {
 
     } catch (err) {
       console.log(err, 'error');
+      alert(err);
     } finally {
       this.isLogging = false;
     }
@@ -114,18 +97,9 @@ export class LoginComponent implements OnInit {
         username: this.username,
         password: this.password
       }
-      const res = await fetch(this.api_2factor, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(sendObj)
-      });
+      const data = await this.authService.sendTwoFactorCode(sendObj);
 
-      const data = await res.json() as IUserVerifyTwoFactor;
       console.log(data);
-
-
 
       if (!data.isVerified) {
         alert(data.message);
@@ -141,11 +115,7 @@ export class LoginComponent implements OnInit {
       //means the code is verified
 
       this.is2FaOpen = false;
-      sessionStorage.setItem("username", JSON.stringify(data.username!));
-      sessionStorage.setItem("role", JSON.stringify(data.role!));
-      sessionStorage.setItem("token", JSON.stringify(data.token!));
-
-
+      this.storeUserDetails(data.username!, data.role!, data.token!);
 
       if (data.role === 'User')
         this.router.navigate(['/user-dashboard'], { replaceUrl: true });
@@ -168,24 +138,17 @@ export class LoginComponent implements OnInit {
         password: this.password
       }
 
-      const res = await fetch(this.api_2factor_retry, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(resendObj)
-      });
+      const data = await this.authService.resendTwoFactorCode(resendObj);
 
-      const data_1 = await res.json() as IUserResendTwoFactor;
-      console.log(data_1);
+      console.log(data);
 
-      if (!data_1.resentSuccessfully && !data_1.hasUser) {
-        alert(data_1.message);
+      if (!data.resentSuccessfully && !data.hasUser) {
+        alert(data.message);
         this.router.navigate(['/login']);
       }
 
-      if (data_1.resentSuccessfully) {
-        alert(data_1.message);
+      if (data.resentSuccessfully) {
+        alert(data.message);
         this.resend2Fa = false;
       }
 
@@ -200,6 +163,12 @@ export class LoginComponent implements OnInit {
 
   handlePassword(pass: string): void {
     this.password = pass;
+  }
+
+  private storeUserDetails(username: string, role: string, token: string) {
+    sessionStorage.setItem("username", JSON.stringify(username));
+    sessionStorage.setItem("role", JSON.stringify(role));
+    sessionStorage.setItem("token", JSON.stringify(token));
   }
 
 

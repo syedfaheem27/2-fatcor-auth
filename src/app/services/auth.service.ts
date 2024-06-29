@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IUserLogin } from '../models/user.interface';
-import { IUserLoginResponse } from '../models/user.response';
+import { IUserLoginResponse, IUserResendTwoFactor, IUserVerifyTwoFactor } from '../models/user.response';
 
 @Injectable({
   providedIn: 'root'
@@ -26,17 +26,46 @@ export class AuthService {
       body: JSON.stringify(userDetails)
     });
 
-    if (!res.ok) {
-      console.log(res);
-      throw new Error("Error")
-    }
-
     const data = await res.json() as IUserLoginResponse;
 
     console.log(data);
     return data;
   }
 
+  public async sendTwoFactorCode(userDetails: {
+    TwoFactorCode: string;
+    username: string;
+    password: string;
+  }) {
+    const res = await fetch(this._2factor_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userDetails)
+    });
+
+    const data = await res.json() as IUserVerifyTwoFactor;
+
+    return data;
+  }
+
+  public async resendTwoFactorCode(userDetails: {
+    username: string;
+    password: string;
+  }) {
+    const res = await fetch(this._2factor_resend_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userDetails)
+    });
+
+    const data = await res.json() as IUserResendTwoFactor;
+
+    return data;
+  }
 
 
 
