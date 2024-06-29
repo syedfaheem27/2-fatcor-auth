@@ -54,8 +54,17 @@ export class LoginComponent implements OnInit {
       }
       const data = await this.authService.login(user);
 
-      if (data.isLoggedInSomewhere)
-        return alert("The user is logged in somewhere else!");
+      if (data.isLoggedInSomewhere) {
+        const response = confirm("The user is logged in somewhere! \n Do you want to logout the user?");
+        if (response) {
+          await this.authService.forceLogout({
+            username: this.username,
+            password: this.password
+          });
+        }
+
+        return;
+      }
 
       if (data.requires2FA) {
         this.is2FaOpen = true;
@@ -170,7 +179,6 @@ export class LoginComponent implements OnInit {
     sessionStorage.setItem("role", JSON.stringify(role));
     sessionStorage.setItem("token", JSON.stringify(token));
   }
-
 
 
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IUserLogin } from '../models/user.interface';
-import { IUserLoginResponse, IUserResendTwoFactor, IUserVerifyTwoFactor } from '../models/user.response';
+import { IUserLoginResponse, IUserLogoutResponse, IUserResendTwoFactor, IUserVerifyTwoFactor } from '../models/user.response';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,10 @@ export class AuthService {
 
   private _2factor_resend_url = "https://localhost:44339/api/User/resend-2fa";
 
-  private logout_url = "https://localhost:44339/api/User/login";
+  private logout_url = "https://localhost:44339/api/User/logout";
+
+  private force_logout_url = "https://localhost:44339/api/User/force-logout";
+
 
 
   constructor() { }
@@ -68,5 +71,34 @@ export class AuthService {
   }
 
 
+  public async logout() {
+    const token = sessionStorage.getItem('token') ?? "token";
+
+    const res = await fetch(this.logout_url, {
+      method: 'POST',
+      headers: {
+        "Authorization": `Bearer ${JSON.parse(token)}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+
+    const data = await res.json() as IUserLogoutResponse;
+    return data;
+  }
+
+  public async forceLogout(user:IUserLogin) {
+    const res = await fetch(this.force_logout_url, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(user)
+    })
+
+    const data = await res.json();
+
+    console.log(data);
+  }
 
 }

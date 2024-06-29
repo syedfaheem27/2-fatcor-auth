@@ -29,3 +29,9 @@ export interface IUserResendTwoFactor {
     hasUser: boolean;
     message: string;
 }
+
+export interface IUserLogoutResponse {
+    message: string;
+    clearSession?: boolean;
+
+}
