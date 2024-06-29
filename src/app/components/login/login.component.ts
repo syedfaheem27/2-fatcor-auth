@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IUserLogin } from 'src/app/models/user.interface';
-import { IUserLoginResponse } from 'src/app/models/user.response';
+import { IUserLoginResponse, IUserResendTwoFactor, IUserVerifyTwoFactor } from 'src/app/models/user.response';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,8 +16,8 @@ export class LoginComponent implements OnInit {
 
   private api_2factor_retry = "https://localhost:44339/api/User/resend-2fa";
 
-  public is2FaOpen = true;
-  public resend2Fa = true;
+  public is2FaOpen = false;
+  public resend2Fa = false;
   public isLogging = false;
   public isSendingCode = false;
   public isResendingCode = false;
@@ -25,7 +26,7 @@ export class LoginComponent implements OnInit {
   public password: string = "";
   public _2faCode: string = "";
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
     const token = sessionStorage.getItem('token');
@@ -50,13 +51,14 @@ export class LoginComponent implements OnInit {
       return alert("Username and Password is required!");
 
 
-    const user: IUserLogin = {
-      username: this.username,
-      password: this.password
-    }
-
     try {
       this.isLogging = true;
+
+      const user: IUserLogin = {
+        username: this.username,
+        password: this.password
+      }
+      // const data=await this.authService.login(user);
 
       const res = await fetch(this.api_url, {
         method: 'POST',
@@ -120,7 +122,7 @@ export class LoginComponent implements OnInit {
         body: JSON.stringify(sendObj)
       });
 
-      const data = await res.json();
+      const data = await res.json() as IUserVerifyTwoFactor;
       console.log(data);
 
 
@@ -174,7 +176,7 @@ export class LoginComponent implements OnInit {
         body: JSON.stringify(resendObj)
       });
 
-      const data_1 = await res.json();
+      const data_1 = await res.json() as IUserResendTwoFactor;
       console.log(data_1);
 
       if (!data_1.resentSuccessfully && !data_1.hasUser) {

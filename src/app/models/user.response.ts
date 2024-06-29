@@ -1,18 +1,31 @@
-type Role = "User" | "Admin"
+type Role = "User" | "Admin";
 
-export interface IUserRegisterResponse {
-    isRegistered?: boolean;
-    message: string;
-
-}
-
-export interface IUserLoginResponse {
-    isSucessfullyLoggedIn?: boolean;
-    isLoggedInSomewhere?: boolean;
+interface CommonResponse {
     message: string;
     username?: string;
     token?: string;
     role?: Role;
-    requires2FA?: boolean;
+}
 
+export interface IUserRegisterResponse {
+    isRegistered?: boolean;
+    message: string;
+}
+
+export interface IUserLoginResponse extends CommonResponse {
+    isSucessfullyLoggedIn?: boolean;
+    isLoggedInSomewhere?: boolean;
+    requires2FA?: boolean;
+}
+
+export interface IUserVerifyTwoFactor extends CommonResponse {
+    isVerified?: boolean;
+    hasExpired?: boolean;
+
+}
+
+export interface IUserResendTwoFactor {
+    resentSuccessfully: boolean;
+    hasUser: boolean;
+    message: string;
 }
