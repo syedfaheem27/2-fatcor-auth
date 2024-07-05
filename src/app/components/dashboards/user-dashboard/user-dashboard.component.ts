@@ -30,7 +30,7 @@ export class UserDashboardComponent implements OnInit {
   async handleAuthenticate() {
     try {
       const token = sessionStorage.getItem('token');
-      console.log(token);
+
       const res = await fetch(this.api_url, {
         method: 'POST',
         headers: {
@@ -39,15 +39,33 @@ export class UserDashboardComponent implements OnInit {
         }
       });
 
+      if (res.status === 401) {
+        const isTokenExpired = res.headers.get("Token-Expired");
+        const authFailed = res.headers.get("Authentication-Failed");
+
+        if (isTokenExpired) {
+          throw new Error("Token authenticaton failed. \nToken Expired!!!");
+        }
+
+        if (authFailed)
+          throw new Error("Token authentication failed. \nInvalid Token!!!");
+      }
 
       const data = await res.json();
 
-      if (!data.isAuthenticated)
+      if (!data.isAuthenticated) {
         return alert(data.message);
-
+        // this.clearUserDetails();
+        // window.location.reload();
+      }
       console.log(data);
+      alert("Authenticated user");
+
     } catch (err) {
-      console.log(err)
+      alert((err as Error).message);
+
+      this.clearUserDetails();
+      this.router.navigate(['/login']);
     }
   }
 

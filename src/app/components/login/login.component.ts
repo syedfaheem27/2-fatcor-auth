@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
           });
         }
 
-        return;
+        return alert("Successfully logged out. \nLog in now.")
       }
 
       if (data.requires2FA) {
