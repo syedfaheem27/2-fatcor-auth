@@ -20,6 +20,8 @@ export class SignupComponent implements OnInit {
   public phoneNumber: string = '';
   public emailId: string = "";
 
+  private error: string = "";
+
   constructor(private router: Router) { }
 
   ngOnInit(): void { }
@@ -27,19 +29,8 @@ export class SignupComponent implements OnInit {
   public async handleSubmit(event: Event) {
     event.preventDefault();
 
-    if (!this.username)
-      return alert("Username is missing!");
-
-    if (!this.emailId && !this.phoneNumber)
-      return alert("EmailId and phone number are missing!");
-
-    if (!this.password)
-      return alert("Password is missing!");
-
-    if (this.password !== this.confirmPassword)
-      return alert("Password and confirm password are not equal!");
-
-
+    if (!this.isValidInput())
+      return alert(this.error);
 
     let user: IUserRegister = {
       username: this.username,
@@ -75,6 +66,32 @@ export class SignupComponent implements OnInit {
       this.isSigningUp = false;
     }
 
+  }
+  private isValidInput(): boolean {
+    const phoneRegex = /\d{10}/;
+    const emailRegex = /[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/;
+    const usernameRegex = /^[0-9A-Za-z]{6,16}$/;
+
+    this.error = "";
+
+    if (!phoneRegex.test(this.phoneNumber))
+      this.error += "Invalid Phone number.\n";
+
+    if (!emailRegex.test(this.emailId))
+      this.error += "Invalid Email address.\n";
+
+    if (!passwordRegex.test(this.password))
+      this.error += "Invalid Password.\nThe password must contain atleast one digit(0-9), one lowercase and uppercase character, one special character and atleast 8 characters and a maximum of 15 characters.\n";
+
+    if (!usernameRegex.test(this.username))
+      this.error += "Invalid Username.\nThe username must contain alphanumeric characters only with min. length of 6 and a max. length of 16.";
+
+
+
+    return this.password === this.confirmPassword && usernameRegex.test(this.username)
+      && phoneRegex.test(this.phoneNumber) && passwordRegex.test(this.password)
+      && emailRegex.test(this.emailId);
   }
 
   handlePassword(data: string) {
