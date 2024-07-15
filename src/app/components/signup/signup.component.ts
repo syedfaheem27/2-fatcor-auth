@@ -42,6 +42,7 @@ export class SignupComponent implements OnInit {
 
     try {
       this.isSigningUp = true;
+      
       const res = await fetch(this.api_url, {
         method: 'POST',
         headers: {

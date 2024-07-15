@@ -17,9 +17,6 @@ export class AuthService {
   private force_logout_url = "https://localhost:44339/api/User/force-logout";
 
 
-
-  constructor() { }
-
   public async login(userDetails: IUserLogin) {
     const res = await fetch(this.login_url, {
       method: 'POST',

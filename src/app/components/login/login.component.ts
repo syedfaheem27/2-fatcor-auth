@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IUserLogin } from 'src/app/models/user.interface';
-import { IUserLoginResponse, IUserResendTwoFactor, IUserVerifyTwoFactor } from 'src/app/models/user.response';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
